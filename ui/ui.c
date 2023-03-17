@@ -57,7 +57,7 @@ void play_game()
 static char choose_player()
 {
     char input[64] = "\0";
-    printf("\nDo you want to be X or O?: ");
+    printf("\nDo you want to play as X or O?: ");
     scanf("%s", input);
     if (input[1] != '\0') {
         printf("Invalid input!\n");
