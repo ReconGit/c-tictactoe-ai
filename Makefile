@@ -2,8 +2,7 @@ CC := gcc
 CFLAGS := -std=c11 -Wall -Wextra -pedantic
 LDFLAGS := -lm
 
-SUBDIRS := ui core
-SRCS := ui/ui.c core/tictactoe.c core/minimax.c
+SRCS := src/ui.c src/tictactoe.c src/minimax.c
 OBJS := $(SRCS:%.c=obj/%.o)
 
 all: obj game_only tests_only
@@ -15,19 +14,18 @@ game_only: $(OBJS) obj/main.o
 tests_only: $(OBJS) obj/tests.o
 	$(CC) $^ -o bin/tests $(LDFLAGS)
 
-obj/main.o: main.c
+obj/main.o: src/main.c
 	cppcheck --enable=performance --error-exitcode=1 $<
 	$(CC) $(CFLAGS) -c $< -o obj/main.o
-
 obj/tests.o: tests/tests.c tests/greatest.h
 	cppcheck --enable=performance --error-exitcode=1 $<
 	$(CC) $(CFLAGS) -c $< -o obj/tests.o
 
 obj:
-	mkdir -p obj bin $(foreach dir,$(addprefix obj/,$(SUBDIRS)),$(dir))
+	mkdir -p obj bin obj/src
 obj/%.o: %.c
 	cppcheck --enable=performance --error-exitcode=1 $<
 	$(CC) $(CFLAGS) -c $< -o $@
 
 clean:
-	rm -rf obj bin game
+	rm -rf obj bin
