@@ -8,7 +8,7 @@
 int min(int a, int b) { return (a < b) ? a : b; }
 int max(int a, int b) { return (a > b) ? a : b; }
 
-static int minmax(char board[3][3], char player, bool turn);
+static int minimax(char board[3][3], char player, bool turn);
 
 struct Move find_best_move(char board[3][3], char player)
 {
@@ -18,7 +18,7 @@ struct Move find_best_move(char board[3][3], char player)
 
     for (int i = 0; moves[i].x != -1; i++) {
         board[moves[i].x][moves[i].y] = player;
-        int moveValue = minmax(board, player, false);
+        int moveValue = minimax(board, player, false);
         board[moves[i].x][moves[i].y] = ' ';
 
         if (moveValue > bestValue) {
@@ -31,7 +31,7 @@ struct Move find_best_move(char board[3][3], char player)
     return bestMove;
 }
 
-static int minmax(char board[3][3], char player, bool turn)
+static int minimax(char board[3][3], char player, bool turn)
 {
     char opponent = (player == 'X') ? 'O' : 'X';
 
@@ -50,14 +50,14 @@ static int minmax(char board[3][3], char player, bool turn)
         best_value = -9999;
         for (int i = 0; moves[i].x != -1; i++) {
             board[moves[i].x][moves[i].y] = player;
-            best_value = max(best_value, minmax(board, player, !turn));
+            best_value = max(best_value, minimax(board, player, !turn));
             board[moves[i].x][moves[i].y] = ' ';
         }
     } else {
         best_value = 9999;
         for (int i = 0; moves[i].x != -1; i++) {
             board[moves[i].x][moves[i].y] = opponent;
-            best_value = min(best_value, minmax(board, player, !turn));
+            best_value = min(best_value, minimax(board, player, !turn));
             board[moves[i].x][moves[i].y] = ' ';
         }
     }
