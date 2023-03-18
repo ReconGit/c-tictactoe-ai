@@ -1,4 +1,4 @@
-A simple 1v1 Tic-Tac-Toe game against AI player using MiniMax tree search algorithm with alpha-beta pruning optimization implemented in C.
+A simple Tic-Tac-Toe game against unbeatable AI player using MiniMax tree search algorithm with Alpha-Beta pruning optimization implemented in C.
 
 Compile with Makefile using "make" or "make all" command in terminal to compile both game and tests, to compile them separately use "make game" or "make tests". Files will be compiled to bin/ directory.
 
