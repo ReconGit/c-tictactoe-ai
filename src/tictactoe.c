@@ -1,5 +1,3 @@
-#include <stdlib.h>
-
 #include "../include/tictactoe.h"
 
 #define MAX_MOVES 10
@@ -34,25 +32,6 @@ enum Winner check_winner(char board[3][3])
         }
     }
     return DRAW;
-}
-
-struct Move* get_valid_moves(char board[3][3])
-{
-    struct Move* moves = malloc(MAX_MOVES * sizeof(struct Move));
-    int move_num = 0;
-    for (int y = 0; y < 3; y++) {
-        for (int x = 0; x < 3; x++) {
-            if (board[x][y] == ' ') {
-                moves[move_num].x = x;
-                moves[move_num].y = y;
-                move_num++;
-            }
-        }
-    }
-    moves[move_num].x = -1; // mark end
-    moves[move_num].y = -1;
-
-    return moves;
 }
 
 bool is_move_valid(char board[3][3], struct Move move)

@@ -7,7 +7,6 @@
 
 static char choose_player();
 static void print_board(char board[3][3]);
-static void print_valid_moves(char board[3][3]);
 static struct Move get_user_move();
 
 void play_game()
@@ -20,9 +19,8 @@ void play_game()
     int cur_player = 1;
     int user_player = choose_player();
 
+    print_board(board);
     while (check_winner(board) == NOT_FINISHED) {
-        print_board(board);
-        print_valid_moves(board);
 
         struct Move move;
         if (cur_player == 1) {
@@ -38,8 +36,8 @@ void play_game()
         }
         board[move.x][move.y] = (cur_player == 1) ? 'X' : 'O';
         cur_player *= -1;
+        print_board(board);
     }
-    print_board(board);
 
     enum Winner winner = check_winner(board);
     if (winner == X_WIN) {
@@ -68,17 +66,6 @@ static char choose_player()
         printf("Invalid input!\n");
         return choose_player();
     }
-}
-
-static void print_valid_moves(char board[3][3])
-{
-    printf("Valid moves:\n");
-    struct Move* moves = get_valid_moves(board);
-    for (int i = 0; moves[i].x != -1; i++) {
-        printf("%c%d ", moves[i].x + 'A', moves[i].y + 1);
-    }
-    free(moves);
-    printf("\n");
 }
 
 static struct Move get_user_move()

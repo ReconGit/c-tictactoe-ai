@@ -20,29 +20,9 @@ TEST test_is_move_valid()
     PASS();
 }
 
-TEST test_get_valid_moves()
-{
-    char board[3][3] = {
-        {' ', 'O', 'X'},
-        {'X', 'X', 'O'},
-        {'O', 'O', 'X'}
-    };
-    struct Move* moves = get_valid_moves(board);
-    struct Move expected_move1 = {0, 0};
-    struct Move expected_move2 = {-1, -1};
-
-    ASSERT_EQ_FMT(expected_move1.x, moves[0].x, "%d");
-    ASSERT_EQ_FMT(expected_move1.y, moves[0].y, "%d");
-
-    ASSERT_EQ_FMT(expected_move2.x, moves[1].x, "%d");
-    ASSERT_EQ_FMT(expected_move2.y, moves[1].y, "%d");
-    PASS();
-}
-
 GREATEST_SUITE(all_tests)
 {
     RUN_TEST(test_is_move_valid);
-    RUN_TEST(test_get_valid_moves);
 }
 
 GREATEST_MAIN_DEFS();

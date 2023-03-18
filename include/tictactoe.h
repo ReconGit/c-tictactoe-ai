@@ -16,6 +16,3 @@ enum Winner check_winner(char board[3][3]);
 
 // Checks if a move is valid.
 bool is_move_valid(char board[3][3], struct Move move);
-
-// Returns array of valid moves.
-struct Move* get_valid_moves(char board[3][3]);
