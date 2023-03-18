@@ -24,10 +24,10 @@ void play_game()
 
         struct Move move;
         if (cur_player == 1) {
-            printf("\nPlayer 1 (X) move: ");
+            printf((user_player == 'X') ? "Player X turn: " : "Bot X turn: \n");
             move = (user_player == 'X') ? get_user_move() : find_best_move(board, 'X');
         } else {
-            printf("\nPlayer 2 (O) move: ");
+            printf((user_player == 'O') ? "Player O turn: " : "Bot O turn: \n");
             move = (user_player == 'O') ? get_user_move() : find_best_move(board, 'O');
         }
         if (!is_move_valid(board, move)) {
@@ -41,11 +41,11 @@ void play_game()
 
     enum Winner winner = check_winner(board);
     if (winner == X_WIN) {
-        printf("Player 1 (X) WINS!\n");
+        printf("Bot X WINS!\n\n");
     } else if (winner == O_WIN) {
-        printf("Player 2 (O) WINS!\n");
+        printf("Bot O WINS!\n\n");
     } else {
-        printf("It's a DRAW!\n");
+        printf("It's a DRAW!\n\n");
     }
 }
 

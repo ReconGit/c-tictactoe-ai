@@ -4,8 +4,14 @@
 
 int main()
 {
-    printf("\nTic-Tac-Toe!\n");
-    play_game();
+    char choice;
+    do {
+        printf("\nTic-Tac-Toe!\n");
+        play_game();
+        printf("Play again? (Y/N): ");
+        scanf(" %c", &choice);
+        while (getchar() != '\n');  // clear stdin
+    } while (choice == 'Y' || choice == 'y');
 
     return 0;
 }
