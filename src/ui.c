@@ -19,8 +19,8 @@ void play_game()
     int cur_player = 1;
     int user_player = choose_player();
 
-    print_board(board);
     while (check_winner(board) == NOT_FINISHED) {
+        print_board(board);
 
         struct Move move;
         if (cur_player == 1) {
@@ -36,8 +36,8 @@ void play_game()
         }
         board[move.x][move.y] = (cur_player == 1) ? 'X' : 'O';
         cur_player *= -1;
-        print_board(board);
     }
+    print_board(board);
 
     enum Winner winner = check_winner(board);
     if (winner == X_WIN) {
