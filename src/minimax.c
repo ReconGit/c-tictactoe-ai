@@ -5,8 +5,8 @@
 #define INT_MIN -2147483648
 #define INT_MAX 2147483647
 
-#define MIN(a,b) (((a)<(b)) ? (a) : (b))
-#define MAX(a,b) (((a)>(b)) ? (a) : (b))
+#define MIN(a, b) (((a) < (b)) ? (a) : (b))
+#define MAX(a, b) (((a) > (b)) ? (a) : (b))
 
 static int minimax(char board[3][3], char ai_player, int depth, bool ai_turn, int alpha, int beta);
 
@@ -18,7 +18,7 @@ struct Move find_best_move(char board[3][3], char ai_player)
         for (int x = 0; x < 3; x++) {
             if (board[y][x] == ' ') {
                 board[y][x] = ai_player;  // try move
-                int move_value = minimax(board, ai_player, DEPTH, false, INT_MIN, INT_MAX);
+                int move_value = minimax(board, ai_player, DEPTH - 1, false, INT_MIN, INT_MAX);
                 board[y][x] = ' ';  // undo move
 
                 if (move_value > best_value) {
@@ -34,7 +34,7 @@ struct Move find_best_move(char board[3][3], char ai_player)
 
 static int minimax(char board[3][3], char ai_player, int depth, bool ai_turn, int alpha, int beta)
 {
-    // win as soon as possible, lose as late as possible
+    // win as soon as possible, lose as late as possible using depth
     enum Winner winner = check_winner(board);
     if (winner == X_WIN) {
         return (ai_player == 'X') ? 10 + depth : -10 - depth;
@@ -45,7 +45,7 @@ static int minimax(char board[3][3], char ai_player, int depth, bool ai_turn, in
     }
 
     int value;
-    if (ai_turn) {
+    if (ai_turn) {  // maximize ai player move
         value = INT_MIN;
         for (int y = 0; y < 3; y++) {
             for (int x = 0; x < 3; x++) {
@@ -61,7 +61,7 @@ static int minimax(char board[3][3], char ai_player, int depth, bool ai_turn, in
                 }
             }
         }
-    } else {
+    } else {  // minimize opponent move
         char opponent = (ai_player == 'X') ? 'O' : 'X';
         value = INT_MAX;
         for (int y = 0; y < 3; y++) {
