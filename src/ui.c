@@ -30,7 +30,7 @@ void play_game()
             printf((user_player == 'O') ? "Player O turn: " : "Bot O turn: \n");
             move = (user_player == 'O') ? get_user_move() : find_best_move(board, 'O');
         }
-        printf("Move: (x:%d, y:%d)\n", move.x, move.y);
+        printf("Move: (x:%c, y:%d)\n", 'a' + move.x, move.y + 1);
         if (!is_move_valid(board, move)) {
             printf("Invalid move!\n");
             continue;
