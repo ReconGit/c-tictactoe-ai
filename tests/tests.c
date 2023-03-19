@@ -15,28 +15,42 @@ TEST test_is_move_valid()
     struct Move valid_move2 = {1, 2};
     struct Move invalid_move1 = {-1, -1};
     struct Move invalid_move2 = {0, 0};
-    ASSERT_EQ_FMT(true, is_move_valid(board, valid_move1), "%d");
-    ASSERT_EQ_FMT(true, is_move_valid(board, valid_move2), "%d");
-    ASSERT_EQ_FMT(false, is_move_valid(board, invalid_move1), "%d");
-    ASSERT_EQ_FMT(false, is_move_valid(board, invalid_move2), "%d");
+    ASSERTm("valid move1", is_move_valid(board, valid_move1));
+    ASSERTm("valid move2", is_move_valid(board, valid_move2));
+    ASSERT_FALSEm("invalid move1", is_move_valid(board, invalid_move1));
+    ASSERT_FALSEm("invalid move2", is_move_valid(board, invalid_move2));
     PASS();
 }
 
 TEST test_check_winner()
 {
-    char board[3][3] = {
+    char board1[3][3] = {
+        {'X', 'X', 'O'},
+        {'O', 'O', 'X'},
+        {' ', 'O', 'X'}
+    };
+    ASSERT_EQ_FMTm("not finished", NOT_FINISHED, check_winner(board1), "%d");
+
+    char board2[3][3] = {
         {'X', 'X', 'X'},
         {' ', ' ', ' '},
         {' ', ' ', ' '}
     };
-    ASSERT_EQ_FMTm("X win", X_WIN, check_winner(board), "%d");
+    ASSERT_EQ_FMTm("X win", X_WIN, check_winner(board2), "%d");
 
-    char board2[3][3] = {
+    char board3[3][3] = {
+        {'O', 'X', 'X'},
+        {' ', 'O', 'X'},
+        {' ', ' ', 'O'}
+    };
+    ASSERT_EQ_FMTm("O win", O_WIN, check_winner(board3), "%d");
+
+    char board4[3][3] = {
         {'X', 'X', 'O'},
         {'O', 'O', 'X'},
         {'X', 'O', 'X'}
     };
-    ASSERT_EQ_FMTm("draw", DRAW, check_winner(board2), "%d");
+    ASSERT_EQ_FMTm("draw", DRAW, check_winner(board4), "%d");
     PASS();
 }
 
