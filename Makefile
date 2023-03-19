@@ -7,10 +7,10 @@ OBJS := $(SRCS:%.c=obj/%.o)
 
 ifeq ($(OS),Windows_NT)
 MKDIR_P = if not exist $(subst /,\,$1) mkdir $(subst /,\,$1)
-RMDIR = rmdir /s /q obj bin
+RMDIR := rmdir /s /q obj bin
 else
 MKDIR_P = mkdir -p $1
-RMDIR = rm -rf obj bin
+RMDIR := rm -rf obj bin
 endif
 
 all: obj game_only tests_only
