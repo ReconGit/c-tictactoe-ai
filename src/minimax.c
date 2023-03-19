@@ -1,25 +1,28 @@
 #include "../include/minimax.h"
 #include "../include/tictactoe.h"
 
-static int min(int a, int b) { return (a < b) ? a : b; }
-static int max(int a, int b) { return (a > b) ? a : b; }
+#define INT_MIN -2147483648
+#define INT_MAX 2147483647
+
+#define MIN(a,b) (((a)<(b)) ? (a) : (b))
+#define MAX(a,b) (((a)>(b)) ? (a) : (b))
 
 static int minimax(char board[3][3], char ai_player, bool ai_turn, int alpha, int beta);
 
 struct Move find_best_move(char board[3][3], char ai_player)
 {
     int best_value = -9999;
-    struct Move best_move;
-    for (int y = 0; y < 3;y++) {  // branch each possible move
-        for (int x = 0; x < 3;x++) {
-            if (board[x][y] == ' ') {
-                board[x][y] = ai_player;
-                int move_value = minimax(board, ai_player, false, -9999, 9999);
-                board[x][y] = ' ';
+    struct Move best_move = {-1, -1};
+    for (int y = 0; y < 3; y++) {  // branch each valid move
+        for (int x = 0; x < 3; x++) {
+            if (board[y][x] == ' ') {
+                board[y][x] = ai_player;  // try move
+                int move_value = minimax(board, ai_player, false, INT_MIN, INT_MAX);
+                board[y][x] = ' ';  // undo move
 
                 if (move_value > best_value) {
-                    best_move.x = x;
                     best_move.y = y;
+                    best_move.x = x;
                     best_value = move_value;
                 }
             }
@@ -41,39 +44,39 @@ static int minimax(char board[3][3], char ai_player, bool ai_turn, int alpha, in
         return 0;
     }
 
-    int best_value;
+    int value;
     if (ai_turn) {
-        best_value = -9999;
-        for (int y = 0; y < 3;y++) {
-            for (int x = 0; x < 3;x++) {
-                if (board[x][y] == ' ') {
-                    board[x][y] = ai_player;
-                    best_value = max(best_value, minimax(board, ai_player, !ai_turn, alpha, beta));
-                    board[x][y] = ' ';
+        value = INT_MIN;
+        for (int y = 0; y < 3; y++) {
+            for (int x = 0; x < 3; x++) {
+                if (board[y][x] == ' ') {
+                    board[y][x] = ai_player;
+                    value = MAX(value, minimax(board, ai_player, false, alpha, beta));
+                    board[y][x] = ' ';
 
-                    alpha = max(alpha, best_value);
-                    if (beta <= alpha) {
-                        return best_value;
+                    alpha = MAX(alpha, value);
+                    if (alpha >= beta) {
+                        return value;
                     }
                 }
             }
         }
     } else {
-        best_value = 9999;
-        for (int y = 0; y < 3;y++) {
-            for (int x = 0; x < 3;x++) {
-                if (board[x][y] == ' ') {
-                    board[x][y] = opponent;
-                    best_value = min(best_value, minimax(board, ai_player, !ai_turn, alpha, beta));
-                    board[x][y] = ' ';
+        value = INT_MAX;
+        for (int y = 0; y < 3; y++) {
+            for (int x = 0; x < 3; x++) {
+                if (board[y][x] == ' ') {
+                    board[y][x] = opponent;
+                    value = MIN(value, minimax(board, ai_player, true, alpha, beta));
+                    board[y][x] = ' ';
 
-                    beta = min(beta, best_value);
-                    if (beta <= alpha) {
-                        return best_value;
+                    beta = MIN(beta, value);
+                    if (alpha >= beta) {
+                        return value;
                     }
                 }
             }
         }
     }
-    return best_value;
+    return value;
 }

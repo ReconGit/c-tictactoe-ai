@@ -7,8 +7,8 @@ enum Winner {
 
 // Represents a coordinate on the board.
 struct Move {
-    int x;
-    int y;
+    int y;  // row
+    int x;  // column
 };
 
 // Checks game state and returns winner.

@@ -8,6 +8,7 @@ int main()
     do {
         printf("\nTic-Tac-Toe!\n");
         play_game();
+        
         printf("Play again? (Y/N): ");
         scanf(" %c", &choice);
         while (getchar() != '\n');  // clear stdin

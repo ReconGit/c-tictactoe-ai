@@ -16,26 +16,27 @@ void play_game()
         {' ', ' ', ' '},
         {' ', ' ', ' '}
     };
-    int cur_player = 1;
-    int user_player = choose_player();
+    int player_x = 1;
+    char user_player = choose_player();
 
     while (check_winner(board) == NOT_FINISHED) {
         print_board(board);
 
         struct Move move;
-        if (cur_player == 1) {
+        if (player_x == 1) {
             printf((user_player == 'X') ? "Player X turn: " : "Bot X turn: \n");
             move = (user_player == 'X') ? get_user_move() : find_best_move(board, 'X');
         } else {
             printf((user_player == 'O') ? "Player O turn: " : "Bot O turn: \n");
             move = (user_player == 'O') ? get_user_move() : find_best_move(board, 'O');
         }
+        printf("Move: (x:%d, y:%d)\n", move.x, move.y);
         if (!is_move_valid(board, move)) {
             printf("Invalid move!\n");
             continue;
         }
-        board[move.x][move.y] = (cur_player == 1) ? 'X' : 'O';
-        cur_player *= -1;
+        board[move.y][move.x] = (player_x == 1) ? 'X' : 'O';
+        player_x *= -1;
     }
     print_board(board);
 
@@ -93,12 +94,12 @@ static struct Move get_user_move()
 
 void print_board(char board[3][3])
 {
-    printf("\n   A B C\n");
+    printf("\n   a b c\n");
     for (int y = 0; y < 3; y++) {
-        printf("%d ", y + 1);
+        printf("%d ", 1 + y);
         for (int x = 0; x < 3; x++) {
             printf("|");
-            printf("%c", board[x][y]);
+            printf("%c", board[y][x]);
         }
         printf("|");
         printf("\n");
