@@ -27,11 +27,30 @@ enum Winner check_winner(char board[3][3])
     for (int y = 0; y < 3; y++) {
         for (int x = 0; x < 3; x++) {
             if (board[y][x] == ' ') {
-                return NOT_FINISHED;
+                return PLAYING;
             }
         }
     }
     return DRAW;
+}
+
+int get_valid_moves(char board[3][3], struct Move moves[9])
+{
+    int move_count = 0;
+    for (int y = 0; y < 3; y++) {
+        for (int x = 0; x < 3; x++) {
+            if (board[y][x] == ' ') {
+                moves[move_count].x = x;
+                moves[move_count].y = y;
+                move_count++;
+            }
+        }
+    }
+    // mark end
+    moves[move_count].x = -1;
+    moves[move_count].y = -1;
+
+    return move_count;
 }
 
 bool is_move_valid(char board[3][3], struct Move move)

@@ -4,6 +4,7 @@
 #include "../include/ui.h"
 #include "../include/tictactoe.h"
 #include "../include/minimax.h"
+#include "../include/mcts.h"
 
 static char choose_player();
 static void print_board(char board[3][3]);
@@ -19,18 +20,18 @@ void play_game()
     int player_x = 1;
     char user_player = choose_player();
 
-    while (check_winner(board) == NOT_FINISHED) {
+    while (check_winner(board) == PLAYING) {
         print_board(board);
 
         struct Move move;
         if (player_x == 1) {
             printf((user_player == 'X') ? "Player X turn: " : "Bot X turn: \n");
-            move = (user_player == 'X') ? get_user_move() : find_best_move(board, 'X');
+            move = (user_player == 'X') ? get_user_move() : mcts_find_best_move(board, 'X');
         } else {
             printf((user_player == 'O') ? "Player O turn: " : "Bot O turn: \n");
-            move = (user_player == 'O') ? get_user_move() : find_best_move(board, 'O');
+            move = (user_player == 'O') ? get_user_move() : mcts_find_best_move(board, 'O');
         }
-        printf("Move: (x:%c, y:%d)\n", 'a' + move.x, move.y + 1);
+        printf("Move: (x:%c,y:%d)\n", 'A' + move.x, move.y + 1);
         if (!is_move_valid(board, move)) {
             printf("Invalid move!\n");
             continue;
@@ -94,7 +95,7 @@ static struct Move get_user_move()
 
 void print_board(char board[3][3])
 {
-    printf("\n   a b c\n");
+    printf("\n   A B C\n");
     for (int y = 0; y < 3; y++) {
         printf("%d ", 1 + y);
         for (int x = 0; x < 3; x++) {

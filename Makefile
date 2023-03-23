@@ -2,7 +2,7 @@ CC := gcc
 CFLAGS := -std=c11 -Wall -Wextra -pedantic
 LDFLAGS := -lm
 
-SRCS := src/ui.c src/tictactoe.c src/minimax.c
+SRCS := src/ui.c src/tictactoe.c src/minimax.c src/mcts.c
 OBJS := $(SRCS:%.c=obj/%.o)
 
 ifeq ($(OS),Windows_NT)

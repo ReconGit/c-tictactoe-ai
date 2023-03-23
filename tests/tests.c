@@ -2,6 +2,7 @@
 
 #include "../include/tictactoe.h"
 #include "../include/minimax.h"
+#include "../include/mcts.h"
 
 TEST test_is_move_valid()
 {
@@ -29,7 +30,7 @@ TEST test_check_winner()
         {'O', 'O', 'X'},
         {' ', 'O', 'X'}
     };
-    ASSERT_EQ_FMTm("not finished", NOT_FINISHED, check_winner(board1), "%d");
+    ASSERT_EQ_FMTm("not finished", PLAYING, check_winner(board1), "%d");
 
     char board2[3][3] = {
         {'X', 'X', 'X'},
@@ -62,6 +63,11 @@ TEST test_find_best_move()
         {' ', ' ', ' '}
     };
     struct Move best_move = find_best_move(board1, 'X');
+    struct Move best_move2 = mcts_find_best_move(board1, 'X');
+
+    ASSERT_EQ_FMTm("MCTS 1.x coordinate", 2, best_move2.x, "%d");
+    ASSERT_EQ_FMTm("MCTS 1.y coordinate", 0, best_move2.y, "%d");
+
     ASSERT_EQ_FMTm("1.x coordinate", 2, best_move.x, "%d");
     ASSERT_EQ_FMTm("1.y coordinate", 0, best_move.y, "%d");
     best_move = find_best_move(board1, 'O');
@@ -94,11 +100,26 @@ TEST test_find_best_move()
     PASS();
 }
 
+TEST test_valid_moves()
+{
+    char board[3][3] = {
+        {'X', 'X', ' '},
+        {' ', 'O', 'O'},
+        {' ', ' ', ' '}
+    };
+
+    struct Move moves[9];
+    int move_count = get_valid_moves(board, moves);
+    ASSERT_EQ_FMTm("Valid move count should equal 5", 5, move_count, "%d");
+    PASS();
+}
+
 SUITE(all_tests)
 {
     RUN_TEST(test_is_move_valid);
     RUN_TEST(test_check_winner);
     RUN_TEST(test_find_best_move);
+    RUN_TEST(test_valid_moves);
 }
 
 GREATEST_MAIN_DEFS();
