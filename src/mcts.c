@@ -7,6 +7,23 @@
 #include <math.h>
 #include <string.h>
 
+#include <stdio.h>
+
+static void print_board(char board[3][3])
+{
+    printf("\n   a b c\n");
+    for (int y = 0; y < 3; y++) {
+        printf("%d ", 1 + y);
+        for (int x = 0; x < 3; x++) {
+            printf("|");
+            printf("%c", board[y][x]);
+        }
+        printf("|");
+        printf("\n");
+    }
+    printf("\n");
+}
+
 #define UCT_CONSTANT 1.41421356237  // sqrt(2)
 
 struct Node {
@@ -14,6 +31,7 @@ struct Node {
     struct Move moves[9];
     struct Node* parent;
     struct Node** children;
+    struct Move current_move;
     char current_player;
     int children_count;
     int visit_count;
@@ -37,6 +55,7 @@ struct Move mcts_find_best_move(char board[3][3], char ai_player)
     root->children_count = 0;
     root->visit_count = 0;
     root->total_score = 0.0;
+    root->current_move = (struct Move){-1, -1};
     root->parent = NULL;
     root->children = NULL;
 
@@ -46,11 +65,19 @@ struct Move mcts_find_best_move(char board[3][3], char ai_player)
         struct Node* node = select(root);
         struct Node* child = expand(node);
         if (child == NULL) {
-            break;  // explored till end
+            continue;;  // explored till end
         }
+        //printf("Simulating... x:%d,y:%d p:%c\n", child->current_move.x, child->current_move.y, child->current_player);
         double score = simulate(child, ai_player);
+        printf("Score: %f\n\n", score);
         backpropagate(child, score);
     }
+
+    for (int i = 0; i < root->children_count; i++) {
+        printf("Move: %d %d, score: %f, visit count: %d\n", root->moves[i].x, root->moves[i].y, root->children[i]->total_score, root->children[i]->visit_count);
+    }
+    print_board(root->board);
+    printf("MCTS: %d simulations\n", root->visit_count);
 
     // choose the best move based on the highest reward
     struct Move best_move = choose_best_move(root);
@@ -69,6 +96,7 @@ static struct Node* select(struct Node* root)
         for (int i = 0; i < node->children_count; i++) {
             struct Node* child = node->children[i];
             double uct = UCT(child, UCT_CONSTANT);
+            printf("UCT: %f move: x:%d, y:%d p:%c\n", uct, child->current_move.x, child->current_move.y, child->current_player);
             if (uct > best_uct) {
                 best_uct = uct;
                 best_child = child;
@@ -81,6 +109,7 @@ static struct Node* select(struct Node* root)
 
 static struct Node *expand(struct Node *node)
 {
+    if (check_winner(node->board) != PLAYING) return NULL;  // game over (no more moves)
     int valid_moves_count = get_valid_moves(node->board, node->moves);
     if (valid_moves_count == 0) return NULL;
 
@@ -89,14 +118,17 @@ static struct Node *expand(struct Node *node)
     node->children = (struct Node**)malloc(valid_moves_count * sizeof(struct Node*));
     for (int i = 0; i < valid_moves_count; i++) {
         node->children[i] = (struct Node*)malloc(sizeof(struct Node));
-        memcpy(node->children[i]->board, node->board, sizeof(node->board));
-        node->children[i]->current_player = (node->current_player == 'X') ? 'O' : 'X';
-        node->children[i]->board[node->moves[i].y][node->moves[i].x] = node->children[i]->current_player;  // simulate move
-        node->children[i]->children_count = 0;
-        node->children[i]->visit_count = 0;
-        node->children[i]->total_score = 0.0;
-        node->children[i]->parent = node;
-        node->children[i]->children = NULL;
+
+        struct Node* child = node->children[i];
+        memcpy(child->board, node->board, sizeof(node->board));
+        child->current_player = (node->current_player == 'X') ? 'O' : 'X';  // set the opposite of previous
+        child->current_move = node->moves[i];
+        child->board[child->current_move.y][child->current_move.x] = child->current_player;  // simulate move
+        child->children_count = 0;
+        child->visit_count = 0;
+        child->total_score = 0.0;
+        child->parent = node;
+        child->children = NULL;
     }
     int random_index = rand() % valid_moves_count;
     return node->children[random_index];  // gamble 
@@ -108,9 +140,11 @@ static int simulate(struct Node *node, char ai_player)
 
     char board[3][3];  // copy the board state
     memcpy(board, node->board, sizeof(node->board));
+    printf("simulation x:%d, y%d p:%c\n", node->current_move.x, node->current_move.y, node->current_player);
+    print_board(board);
 
     // simulate a game from the current board state
-    char current_player = ai_player;
+    char current_player = (node->current_player == 'X') ? 'O' : 'X';
     while (true) {
         enum Winner winner = check_winner(board);
         if (winner == X_WIN) return (ai_player == 'X') ? 1 : -1;

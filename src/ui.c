@@ -13,9 +13,9 @@ static struct Move get_user_move();
 void play_game()
 {
     char board[3][3] = {
-        {' ', ' ', ' '},
-        {' ', ' ', ' '},
-        {' ', ' ', ' '}
+        {' ', ' ', 'X'},
+        {' ', 'X', ' '},
+        {'O', ' ', 'O'}
     };
     int player_x = 1;
     char user_player = choose_player();
@@ -56,11 +56,11 @@ static char choose_player()
         printf("Invalid input!\n");
         return choose_player();
     }
-    if (input[0] == 'X' || input[0] == 'x') {
-        return 'X';
-    } else if (input[0] == 'O' || input[0] == 'o') {
-        return 'O';
-    } else {
+    switch (input[0]) {
+    case 'q': case 'Q': exit(0);
+    case 'x': case 'X': return 'X'; break;
+    case 'o': case 'O': return 'O'; break;
+    default:
         printf("Invalid input!\n");
         return choose_player();
     }
