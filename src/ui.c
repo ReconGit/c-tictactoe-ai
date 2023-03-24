@@ -42,13 +42,9 @@ void play_game()
     print_board(board);
 
     enum Winner winner = check_winner(board);
-    if (winner == X_WIN) {
-        printf("Bot X WINS!\n\n");
-    } else if (winner == O_WIN) {
-        printf("Bot O WINS!\n\n");
-    } else {
-        printf("It's a DRAW!\n\n");
-    }
+    if (winner == X_WIN) printf("Bot X WINS!\n\n");
+    else if (winner == O_WIN) printf("Bot O WINS!\n\n");
+    else printf("It's a DRAW!\n\n");
 }
 
 static char choose_player()
@@ -93,7 +89,7 @@ static struct Move get_user_move()
     return move;
 }
 
-void print_board(char board[3][3])
+static void print_board(char board[3][3])
 {
     printf("\n   A B C\n");
     for (int y = 0; y < 3; y++) {

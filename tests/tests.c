@@ -114,12 +114,92 @@ TEST test_valid_moves()
     PASS();
 }
 
+TEST self_play()
+{
+    int games_limit = 20;
+    int games_played = 0;
+    int minimax_wins = 0;
+    int mcts_wins = 0;
+    int draws = 0;
+    do {
+        char board[3][3] = {
+        {' ', ' ', ' '},
+        {' ', ' ', ' '},
+        {' ', ' ', ' '}
+        };
+        int player_x = 1;
+
+        while (check_winner(board) == PLAYING) {
+            struct Move move;
+            if (player_x == 1) {
+                move = find_best_move(board, 'X');
+            } else {
+                move = mcts_find_best_move(board, 'O');
+            }
+            if (!is_move_valid(board, move)) {
+                printf("Invalid move!\n");
+                continue;
+            }
+            board[move.y][move.x] = (player_x == 1) ? 'X' : 'O';
+            player_x *= -1;
+        }
+        enum Winner winner = check_winner(board);
+        if (winner == X_WIN) minimax_wins++;
+        else if (winner == O_WIN) mcts_wins++;
+        else draws++;
+        games_played++;
+
+    } while (games_played < games_limit);
+    printf("X minimax wins: %d\n", minimax_wins);
+    printf("O mcts wins: %d\n", mcts_wins);
+    printf("draws: %d\n", draws);
+
+    games_played = 0;
+    minimax_wins = 0;
+    mcts_wins = 0;
+    draws = 0;
+    do {
+        char board[3][3] = {
+        {' ', ' ', ' '},
+        {' ', ' ', ' '},
+        {' ', ' ', ' '}
+        };
+        int player_x = 1;
+
+        while (check_winner(board) == PLAYING) {
+            struct Move move;
+            if (player_x == 1) {
+                move = mcts_find_best_move(board, 'X');
+            } else {
+                move = find_best_move(board, 'O');
+            }
+            if (!is_move_valid(board, move)) {
+                printf("Invalid move!\n");
+                continue;
+            }
+            board[move.y][move.x] = (player_x == 1) ? 'X' : 'O';
+            player_x *= -1;
+        }
+        enum Winner winner = check_winner(board);
+        if (winner == X_WIN) mcts_wins++;
+        else if (winner == O_WIN) minimax_wins++;
+        else draws++;
+        games_played++;
+        
+    } while (games_played < games_limit);
+    printf("O minimax wins: %d\n", minimax_wins);
+    printf("X mcts wins: %d\n", mcts_wins);
+    printf("draws: %d\n", draws);
+    PASS();
+}
+
 SUITE(all_tests)
 {
     RUN_TEST(test_is_move_valid);
     RUN_TEST(test_check_winner);
     RUN_TEST(test_find_best_move);
     RUN_TEST(test_valid_moves);
+    RUN_TEST(self_play);
 }
 
 GREATEST_MAIN_DEFS();
