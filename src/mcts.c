@@ -40,7 +40,7 @@ struct Node {
 
 static double UCT(struct Node* node, double exploration_param);
 static struct Node* select(struct Node* root);
-static struct Node* expand(struct Node *node);
+static struct Node* expand(struct Node *node, int move_idx);
 static int simulate(struct Node *node, char ai_player);
 static void backpropagate(struct Node *node, double reward);
 static struct Move choose_best_move(struct Node *root);
@@ -52,32 +52,34 @@ struct Move mcts_find_best_move(char board[3][3], char ai_player)
     struct Node* root = (struct Node*)malloc(sizeof(struct Node));
     memcpy(root->board, board, sizeof(root->board));
     root->current_player = (ai_player == 'X') ? 'O' : 'X';  // set the opposite at root
-    root->children_count = 0;
+    root->children_count = get_valid_moves(root->board, root->moves);
     root->visit_count = 0;
     root->total_score = 0.0;
     root->current_move = (struct Move){-1, -1};
     root->parent = NULL;
-    root->children = NULL;
+    root->children = (struct Node**)malloc(root->children_count * sizeof(struct Node*));
+    for (int i = 0; i < root->children_count; i++) {
+        root->children[i] = NULL;
+    }
 
     // perform MCTS in limited time (1 sec)
     time_t start_time = time(NULL);
     while (time(NULL) - start_time < 1) {
         struct Node* node = select(root);
-        struct Node* child = expand(node);
-        if (child == NULL) {
-            continue;;  // explored till end
+        if (node == NULL) {
+            break;  // explored till end
         }
         //printf("Simulating... x:%d,y:%d p:%c\n", child->current_move.x, child->current_move.y, child->current_player);
-        double score = simulate(child, ai_player);
-        printf("Score: %f\n\n", score);
-        backpropagate(child, score);
+        double score = simulate(node, ai_player);
+        //printf("Score: %f\n\n", score);
+        backpropagate(node, score);
     }
 
-    for (int i = 0; i < root->children_count; i++) {
-        printf("Move: %d %d, score: %f, visit count: %d\n", root->moves[i].x, root->moves[i].y, root->children[i]->total_score, root->children[i]->visit_count);
-    }
-    print_board(root->board);
-    printf("MCTS: %d simulations\n", root->visit_count);
+    // for (int i = 0; i < root->children_count; i++) {
+    //     printf("Move: %d %d, score: %f, visit count: %d\n", root->moves[i].x, root->moves[i].y, root->children[i]->total_score, root->children[i]->visit_count);
+    // }
+    // print_board(root->board);
+    // printf("MCTS: %d simulations\n", root->visit_count);
 
     // choose the best move based on the highest reward
     struct Move best_move = choose_best_move(root);
@@ -89,14 +91,20 @@ struct Move mcts_find_best_move(char board[3][3], char ai_player)
 static struct Node* select(struct Node* root)
 {
     struct Node* node = root;
-    while (node->children_count > 0) {
+    //printf("1\n");
+    while (node->visit_count > 0 && node->children_count > 0) {
         double best_uct = -INFINITY;
+        //printf("2\n");
         struct Node* best_child = NULL;
 
         for (int i = 0; i < node->children_count; i++) {
+            if (node->children[i] == NULL) {
+                //printf("3\n");
+                return expand(node, i);
+            }
             struct Node* child = node->children[i];
             double uct = UCT(child, UCT_CONSTANT);
-            printf("UCT: %f move: x:%d, y:%d p:%c\n", uct, child->current_move.x, child->current_move.y, child->current_player);
+            //printf("UCT: %f move: x:%d, y:%d p:%c\n", uct, child->current_move.x, child->current_move.y, child->current_player);
             if (uct > best_uct) {
                 best_uct = uct;
                 best_child = child;
@@ -104,34 +112,32 @@ static struct Node* select(struct Node* root)
         }
         node = best_child;
     }
+    //printf("4\n");
     return node;
 }
 
-static struct Node *expand(struct Node *node)
+static struct Node *expand(struct Node *node, int move_idx)
 {
     if (check_winner(node->board) != PLAYING) return NULL;  // game over (no more moves)
-    int valid_moves_count = get_valid_moves(node->board, node->moves);
-    if (valid_moves_count == 0) return NULL;
 
-    node->children_count = valid_moves_count;  // update children count (previously 0)
-    // alocate and initialize each child
-    node->children = (struct Node**)malloc(valid_moves_count * sizeof(struct Node*));
-    for (int i = 0; i < valid_moves_count; i++) {
-        node->children[i] = (struct Node*)malloc(sizeof(struct Node));
+    node->children[move_idx] = (struct Node*)malloc(sizeof(struct Node));
 
-        struct Node* child = node->children[i];
-        memcpy(child->board, node->board, sizeof(node->board));
-        child->current_player = (node->current_player == 'X') ? 'O' : 'X';  // set the opposite of previous
-        child->current_move = node->moves[i];
-        child->board[child->current_move.y][child->current_move.x] = child->current_player;  // simulate move
-        child->children_count = 0;
-        child->visit_count = 0;
-        child->total_score = 0.0;
-        child->parent = node;
-        child->children = NULL;
+    struct Node* child = node->children[move_idx];
+    memcpy(child->board, node->board, sizeof(node->board));
+    child->current_player = (node->current_player == 'X') ? 'O' : 'X';  // set the opposite of previous
+    child->current_move = node->moves[move_idx];
+    child->board[child->current_move.y][child->current_move.x] = child->current_player;  // simulate move
+    child->children_count = get_valid_moves(child->board, child->moves);
+    child->visit_count = 0;
+    child->total_score = 0.0;
+    child->parent = node;
+    child->children = (struct Node**)malloc(child->children_count * sizeof(struct Node*));
+    for (int i = 0; i < child->children_count; i++) {
+        child->children[i] = NULL;
     }
-    int random_index = rand() % valid_moves_count;
-    return node->children[random_index];  // gamble 
+    node->children[move_idx] = child;
+
+    return child;
 }
 
 static int simulate(struct Node *node, char ai_player)
@@ -140,8 +146,8 @@ static int simulate(struct Node *node, char ai_player)
 
     char board[3][3];  // copy the board state
     memcpy(board, node->board, sizeof(node->board));
-    printf("simulation x:%d, y%d p:%c\n", node->current_move.x, node->current_move.y, node->current_player);
-    print_board(board);
+    // printf("%c%d %c\n", node->current_move.x + 'a', node->current_move.y, node->current_player);
+    // print_board(board);
 
     // simulate a game from the current board state
     char current_player = (node->current_player == 'X') ? 'O' : 'X';
@@ -192,9 +198,8 @@ static struct Move choose_best_move(struct Node *root)
 
 static double UCT(struct Node* node, double exploration_param)
 {
-    if (node->visit_count == 0) {
-        return INFINITY;  // node not yet explored
-    }
+    if (node->visit_count == 0) return INFINITY; // node is not expanded yet
+
     double exploitation = node->total_score / node->visit_count;
     double exploration = exploration_param * sqrt(log(node->parent->visit_count) / node->visit_count);
     return exploitation + exploration;
