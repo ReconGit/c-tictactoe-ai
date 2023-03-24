@@ -46,7 +46,7 @@ struct Move mcts_find_best_move(char board[3][3], char ai_player)
         struct Node* node = select(root);
         struct Node* child = expand(node);
         if (child == NULL) {
-            break;  // solved
+            break;  // explored till end
         }
         double score = simulate(child, ai_player);
         backpropagate(child, score);
@@ -105,13 +105,10 @@ static struct Node *expand(struct Node *node)
 static int simulate(struct Node *node, char ai_player)
 {
     if (node == NULL) return 0;
-    // copy the board state
-    char board[3][3];
-    for (int y = 0; y < 3; y++) {
-        for (int x = 0; x < 3; x++) {
-            board[y][x] = node->board[y][x];
-        }
-    }
+
+    char board[3][3];  // copy the board state
+    memcpy(board, node->board, sizeof(node->board));
+
     // simulate a game from the current board state
     char current_player = ai_player;
     while (true) {
