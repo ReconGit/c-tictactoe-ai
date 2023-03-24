@@ -26,10 +26,10 @@ void play_game()
         struct Move move;
         if (player_x == 1) {
             printf((user_player == 'X') ? "Player X turn: " : "Bot X turn: \n");
-            move = (user_player == 'X') ? get_user_move() : mcts_find_best_move(board, 'X');
+            //move = (user_player == 'X') ? get_user_move() : mcts_find_best_move(board, 'X');
         } else {
             printf((user_player == 'O') ? "Player O turn: " : "Bot O turn: \n");
-            move = (user_player == 'O') ? get_user_move() : mcts_find_best_move(board, 'O');
+            //move = (user_player == 'O') ? get_user_move() : mcts_find_best_move(board, 'O');
         }
         printf("Move: (x:%c,y:%d)\n", 'A' + move.x, move.y + 1);
         if (!is_move_valid(board, move)) {

@@ -36,6 +36,12 @@ enum Winner check_winner(char board[3][3])
 
 int get_valid_moves(char board[3][3], struct Move moves[9])
 {
+    // initialize all
+    for (int i = 0; i < 9; i++) {
+        moves[i].x = -1;
+        moves[i].y = -1;
+    }
+
     int move_count = 0;
     for (int y = 0; y < 3; y++) {
         for (int x = 0; x < 3; x++) {
@@ -46,10 +52,6 @@ int get_valid_moves(char board[3][3], struct Move moves[9])
             }
         }
     }
-    // mark end
-    moves[move_count].x = -1;
-    moves[move_count].y = -1;
-
     return move_count;
 }
 

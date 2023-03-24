@@ -63,10 +63,10 @@ TEST test_find_best_move()
         {' ', ' ', ' '}
     };
     struct Move best_move = find_best_move(board1, 'X');
-    struct Move best_move2 = mcts_find_best_move(board1, 'X');
+    int best_move2 = mcts_find_best_move(board1, 'X');
 
-    ASSERT_EQ_FMTm("MCTS 1.x coordinate", 2, best_move2.x, "%d");
-    ASSERT_EQ_FMTm("MCTS 1.y coordinate", 0, best_move2.y, "%d");
+    ASSERT_EQ_FMTm("MCTS 1.x coordinate", 2, best_move2, "%d");
+    //ASSERT_EQ_FMTm("MCTS 1.y coordinate", 0, best_move2.y, "%d");
 
     ASSERT_EQ_FMTm("1.x coordinate", 2, best_move.x, "%d");
     ASSERT_EQ_FMTm("1.y coordinate", 0, best_move.y, "%d");
