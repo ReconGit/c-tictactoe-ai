@@ -152,7 +152,7 @@ TEST self_play()
     } while (games_played < games_limit);
     printf("X minimax wins: %d\n", minimax_wins);
     printf("O mcts wins: %d\n", mcts_wins);
-    printf("draws: %d\n", draws);
+    printf("draws: %d\n\n", draws);
 
     games_played = 0;
     minimax_wins = 0;
@@ -185,7 +185,7 @@ TEST self_play()
         else if (winner == O_WIN) minimax_wins++;
         else draws++;
         games_played++;
-        
+
     } while (games_played < games_limit);
     printf("O minimax wins: %d\n", minimax_wins);
     printf("X mcts wins: %d\n", mcts_wins);

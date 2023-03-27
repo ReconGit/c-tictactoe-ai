@@ -13,9 +13,9 @@ static struct Move get_user_move();
 void play_game()
 {
     char board[3][3] = {
-        {' ', ' ', 'X'},
-        {' ', 'X', ' '},
-        {'O', ' ', 'O'}
+        {' ', ' ', ' '},
+        {' ', ' ', ' '},
+        {' ', ' ', ' '}
     };
     int player_x = 1;
     char user_player = choose_player();
