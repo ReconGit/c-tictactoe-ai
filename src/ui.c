@@ -26,10 +26,10 @@ void play_game()
         struct Move move;
         if (player_x == 1) {
             printf((user_player == 'X') ? "Player X turn: " : "Bot X turn: \n");
-            move = (user_player == 'X') ? get_user_move() : mcts_find_best_move(board, 'X');
+            move = (user_player == 'X') ? get_user_move() : mcts_move(board, 'X');
         } else {
             printf((user_player == 'O') ? "Player O turn: " : "Bot O turn: \n");
-            move = (user_player == 'O') ? get_user_move() : mcts_find_best_move(board, 'O');
+            move = (user_player == 'O') ? get_user_move() : mcts_move(board, 'O');
         }
         printf("Move: (x:%c,y:%d)\n", 'A' + move.x, move.y + 1);
         if (!is_move_valid(board, move)) {
@@ -51,7 +51,11 @@ static char choose_player()
 {
     char input[64] = "\0";
     printf("\nDo you want to play as X or O?: ");
-    scanf("%s", input);
+    int u = scanf("%s", input);
+    if (u == EOF) {
+        printf("Invalid input!\n");
+        return choose_player();
+    }
     if (input[1] != '\0') {
         printf("Invalid input!\n");
         return choose_player();
@@ -68,10 +72,15 @@ static char choose_player()
 
 static struct Move get_user_move()
 {
-    char input[64] = "\0";
-    scanf("%s", input);
-
     struct Move move = {-1, -1};
+
+    char input[64] = "\0";
+    int u = scanf("%s", input);
+    if (u == EOF) {
+        printf("Invalid input!\n");
+        return move;
+    }
+
     if (input[2] != '\0') {
         return move;
     }

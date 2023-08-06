@@ -4,6 +4,8 @@
 #include "../include/minimax.h"
 #include "../include/mcts.h"
 
+#define GAMES_COUNT 100
+
 TEST test_is_move_valid()
 {
     char board[3][3] = {
@@ -62,15 +64,15 @@ TEST test_find_best_move()
         {' ', 'O', 'O'},
         {' ', ' ', ' '}
     };
-    struct Move best_move = find_best_move(board1, 'X');
-    struct Move best_move2 = mcts_find_best_move(board1, 'X');
+    struct Move best_move = minimax_move(board1, 'X');
+    struct Move best_move2 = mcts_move(board1, 'X');
 
     ASSERT_EQ_FMTm("MCTS 1.x coordinate", 2, best_move2.x, "%d");
     ASSERT_EQ_FMTm("MCTS 1.y coordinate", 0, best_move2.y, "%d");
 
     ASSERT_EQ_FMTm("1.x coordinate", 2, best_move.x, "%d");
     ASSERT_EQ_FMTm("1.y coordinate", 0, best_move.y, "%d");
-    best_move = find_best_move(board1, 'O');
+    best_move = minimax_move(board1, 'O');
     ASSERT_EQ_FMTm("2.x coordinate", 0, best_move.x, "%d");
     ASSERT_EQ_FMTm("2.y coordinate", 1, best_move.y, "%d");
 
@@ -79,10 +81,10 @@ TEST test_find_best_move()
         {' ', 'X', 'X'},
         {' ', ' ', ' '}
     };
-    best_move = find_best_move(board2, 'X');
+    best_move = minimax_move(board2, 'X');
     ASSERT_EQ_FMTm("3.x coordinate", 0, best_move.x, "%d");
     ASSERT_EQ_FMTm("3.y coordinate", 1, best_move.y, "%d");
-    best_move = find_best_move(board2, 'O');
+    best_move = minimax_move(board2, 'O');
     ASSERT_EQ_FMTm("4.x coordinate", 2, best_move.x, "%d");
     ASSERT_EQ_FMTm("4.y coordinate", 0, best_move.y, "%d");
 
@@ -91,10 +93,10 @@ TEST test_find_best_move()
         {' ', 'X', 'O'},
         {' ', ' ', 'O'}
     };
-    best_move = find_best_move(board3, 'X');
+    best_move = minimax_move(board3, 'X');
     ASSERT_EQ_FMTm("5.x coordinate", 0, best_move.x, "%d");
     ASSERT_EQ_FMTm("5.y coordinate", 2, best_move.y, "%d");
-    best_move = find_best_move(board3, 'O');
+    best_move = minimax_move(board3, 'O');
     ASSERT_EQ_FMTm("6.x coordinate", 0, best_move.x, "%d");
     ASSERT_EQ_FMTm("6.y coordinate", 2, best_move.y, "%d");
     PASS();
@@ -116,7 +118,6 @@ TEST test_valid_moves()
 
 TEST self_play()
 {
-    int games_limit = 20;
     int games_played = 0;
     int minimax_wins = 0;
     int mcts_wins = 0;
@@ -132,9 +133,9 @@ TEST self_play()
         while (check_winner(board) == PLAYING) {
             struct Move move;
             if (player_x == 1) {
-                move = find_best_move(board, 'X');
+                move = minimax_move(board, 'X');
             } else {
-                move = mcts_find_best_move(board, 'O');
+                move = mcts_move(board, 'O');
             }
             if (!is_move_valid(board, move)) {
                 printf("Invalid move!\n");
@@ -149,7 +150,7 @@ TEST self_play()
         else draws++;
         games_played++;
 
-    } while (games_played < games_limit);
+    } while (games_played < GAMES_COUNT);
     printf("X minimax wins: %d\n", minimax_wins);
     printf("O mcts wins: %d\n", mcts_wins);
     printf("draws: %d\n\n", draws);
@@ -169,9 +170,9 @@ TEST self_play()
         while (check_winner(board) == PLAYING) {
             struct Move move;
             if (player_x == 1) {
-                move = mcts_find_best_move(board, 'X');
+                move = mcts_move(board, 'X');
             } else {
-                move = find_best_move(board, 'O');
+                move = minimax_move(board, 'O');
             }
             if (!is_move_valid(board, move)) {
                 printf("Invalid move!\n");
@@ -186,7 +187,7 @@ TEST self_play()
         else draws++;
         games_played++;
 
-    } while (games_played < games_limit);
+    } while (games_played < GAMES_COUNT);
     printf("O minimax wins: %d\n", minimax_wins);
     printf("X mcts wins: %d\n", mcts_wins);
     printf("draws: %d\n", draws);

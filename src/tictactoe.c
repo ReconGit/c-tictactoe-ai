@@ -43,6 +43,11 @@ int get_valid_moves(char board[3][3], struct Move moves[9])
     }
 
     int move_count = 0;
+    // if games is over, no valid moves
+    if (check_winner(board) != PLAYING) {
+        return move_count;
+    }
+    // otherwise, find all empty cells
     for (int y = 0; y < 3; y++) {
         for (int x = 0; x < 3; x++) {
             if (board[y][x] == ' ') {

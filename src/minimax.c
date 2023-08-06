@@ -1,7 +1,7 @@
 #include "../include/minimax.h"
 #include "../include/tictactoe.h"
 
-#define DEPTH 9
+#define DEPTH 8
 #define INT_MIN -2147483648
 #define INT_MAX 2147483647
 
@@ -10,7 +10,7 @@
 
 static int minimax(char board[3][3], char ai_player, int depth, bool ai_turn, int alpha, int beta);
 
-struct Move find_best_move(char board[3][3], char ai_player)
+struct Move minimax_move(char board[3][3], char ai_player)
 {
     int best_value = INT_MIN;
     struct Move best_move = {-1, -1};

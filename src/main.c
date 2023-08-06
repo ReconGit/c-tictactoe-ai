@@ -10,7 +10,11 @@ int main()
         play_game();
         
         printf("Play again? (Y/N): ");
-        scanf(" %c", &choice);
+        int u = scanf(" %c", &choice);
+        if (u == EOF) {
+            printf("Invalid input!\n");
+            return 1;
+        }
         while (getchar() != '\n');  // clear stdin
     } while (choice == 'Y' || choice == 'y');
 

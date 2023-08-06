@@ -7,7 +7,9 @@
 #include <math.h>
 #include <string.h>
 
-#include <stdio.h>
+//#include <stdio.h> // for debugging
+
+#define ITERATIONS 1000
 
 struct Node {
     char player;
@@ -21,16 +23,16 @@ struct Node {
 };
 
 static double UCT(struct Node* node);
-static struct Node* select(struct Node* root);
+static struct Node* select_child(struct Node* root);
 static struct Node* expand(struct Node *node, char board[3][3]);
 static int simulate(struct Node *node, char board[3][3]);
 static void backpropagate(struct Node *node, enum Winner winner);
 static struct Move choose_best_move(struct Node *root);
 static void free_tree(struct Node *node);
 
-struct Move mcts_find_best_move(char board[3][3], char ai_player)
+struct Move mcts_move(char board[3][3], char ai_player)
 {
-    srand(time(NULL));  // set random seed
+    srand((unsigned int)time(NULL));  // set random seed
     // initialize the root node
     struct Node* root = (struct Node*)malloc(sizeof(struct Node));
     root->player = (ai_player == 'X') ? 'O' : 'X';  // root player is the opponent of the AI
@@ -44,14 +46,13 @@ struct Move mcts_find_best_move(char board[3][3], char ai_player)
         root->children[i] = NULL;
     }
 
-    int max_iterations = 1000;
-    for (int i = 0; i < max_iterations; i++) {
+    for (int i = 0; i < ITERATIONS; i++) {
         struct Node* node = root;
         char simulation[3][3];
         memcpy(simulation, board, sizeof(simulation));
 
         while (node->unexplored[0].x == -1 && node->children_count > 0) {
-            node = select(node);
+            node = select_child(node);
             simulation[node->move.y][node->move.x] = node->player;
         }
         if (check_winner(simulation) == PLAYING) {
@@ -74,7 +75,7 @@ struct Move mcts_find_best_move(char board[3][3], char ai_player)
     return best_move;
 }
 
-static struct Node* select(struct Node* node)
+static struct Node* select_child(struct Node* node)
 {
     double best_uct = -INFINITY;
     struct Node* best_child = node->children[0];
