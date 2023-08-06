@@ -1,5 +1,5 @@
 CC := gcc
-CFLAGS := -std=c11 -Wall -Wextra -pedantic
+CFLAGS := -std=c11 -O3 -Wall -Wextra -Wconversion -pedantic
 LDFLAGS := -lm
 
 SRCS := src/ui.c src/tictactoe.c src/minimax.c src/mcts.c
